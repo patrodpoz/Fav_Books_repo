@@ -1,0 +1,65 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    {% load static%}
+    <link rel="stylesheet" href="{% static 'books_app/style.css' %}">
+     <title>Document</title>
+ </head>
+ <body><div class="container">
+    <div class="title-block">
+        <h1>Welcome {{request.session.user}}</h1>
+        <a class="return" href="/">Log Out</a>
+        <a class="booklist" href="/books">Back to Booklist</a>
+        <hr class="my-4">
+    </div>
+    <div class="book-info">
+        <div class="Update">
+            {%if thisbook.uploaded_by.id == request.session.user_id%}
+            <form class="userbuttons" action="/books/{{thisbook.id}}/update" method="POST">
+                {%csrf_token%}
+        
+                <input type="text" class="form-control col-2" name="title" value="{{thisbook.title}}">
+                <h6>Added by: {{thisbook.uploaded_by.first_name}} {{thisbook.uploaded_by.last_name}}</h6>
+                <h6>Added on: {{thisbook.created_at}}</h6>
+                <h6>Last updated on: {{thisbook.updated_at}}</h6>
+        
+        
+                <h4>Description:</h4>
+                <div class="form-group">
+                <textarea name="description" class="form-control" cols="30" rows="4" value="{{thisbook.description}}" name="description">{{thisbook.description}}</textarea>
+                <br>
+                <button type="submit" class="btn btn-info">Update</button>
+                
+            </form>
+        </div>
+        
+        <form class="userbuttons" action="/books/{{thisbook.id}}/eliminate" method="POST">
+            {%csrf_token%}
+            <button type="submit" class="btn btn-outline-info">Delete</button>
+        </form>
+        {% else %}
+        <h3>{{thisbook.title}}</h3>
+        <h6>Added by: {{thisbook.uploaded_by.first_name}} {{thisbook.uploaded_by.last_name}}</h6>
+        <h6>Added on: {{thisbook.created_at}}</h6>
+        <h6>Last updated on: {{thisbook.updated_at}}</h6>
+        <h6>Description: {{thisbook.description}}</h6>
+        {%endif%}
+    </div>
+    <div class="favorites">
+        <h4>Users Who Like This Book:</h4>
+        <ul class="list-group list-group-flush">
+            {%for u in thisuser %}
+            <li class="list-group-item">{{u.first_name}} {{u.last_name}} {%if likedthisbook%}<a class="left" href="/unfavorite/{{thisbook.id}}">Un-Favorite</a>{%else%}<a  class="left" href="/favorite/{{thisbook.id}}">Add to Favorites</a>{%endif%}</li>
+            {% endfor %}
+            
+        </ul>
+    </div>
+</div>
+     
+ </body>
+ </html>
+ 

@@ -1,0 +1,58 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Books</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    {% load static%}
+    <link rel="stylesheet" href="{% static 'books_app/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="title-block">
+            <h1>Welcome {{request.session.user}}</h1>
+            <a class="return" href="http://localhost:8000">Log Out</a>
+            <hr class="my-4">
+        </div>
+        <div class="addABook">
+            <h1>Add a Favorite Book</h1>
+            {% if messages %}
+            <ul class="messages">    
+                {% for message in messages %}    
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>    
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <form action="/books/ad" method='POST'>
+                {% csrf_token%}
+                <div class="form-group">
+                    <label>Title:</label>
+                    <input type="text" class="form-control col-2" name="title">
+                </div>
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea name="description" class="form-control" cols="15" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-info">Add</button>
+            </form>
+        </div>
+        <div class="all-books">
+            <h1>All Books</h1>
+            {% for book in allbooks%}
+            <a href="/books/{{book.id}}"><h4>{{book.title}}</h4></a>
+            <h6>(added by {{book.uploaded_by.first_name}} {{book.uploaded_by.last_name}})</h6>
+            {%if thisuser == request.session.user_id %}<h6>This is one of your favorites</h6>{%else%}<a  class="left" href="/favorite/{{book.id}}">Add to Favorites</a>{%endif%}
+            {%endfor%}
+        </div>
+        <div class="your-books">
+            <h1>Your Favorite Books</h1>
+            {% for like in liked%}
+            <a href="/books/{{like.id}}"><h4>{{like.title}}</h4></a>
+            <h6>(added by {{like.uploaded_by.first_name}} {{like.uploaded_by.last_name}})</h6>
+            {%endfor%}
+            
+        </div>
+    </div>
+</body>
+</html>
